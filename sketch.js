@@ -8,7 +8,7 @@ let snake;
 let score = 0;
 
 function setup() {
-  createCanvas(1200, 600);
+  createCanvas(window.innerWidth - 3, window.innerHeight - 4);
   cols = floor(width / w);
   rows = floor(height / w);
   frameRate(framert);
@@ -26,10 +26,11 @@ function draw() {
     score += food.points;
     food = new Food();
   }
-  /*if(snake.bump()) {
-    snake = new Snake();
+
+  if(snake.self_intersect()) {
     score = 0;
-  }*/
+    snake = new Snake();
+  }
 
   if(despawn) {
     if(random() > 0.9) {
@@ -45,14 +46,23 @@ function draw() {
 }
 
 function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    snake.direction = 1;
-  } else if (keyCode === RIGHT_ARROW) {
-    snake.direction = 3;
-  } else if (keyCode === UP_ARROW) {
-    snake.direction = 4;
-  } else if (keyCode === DOWN_ARROW) {
-    snake.direction = 2;
+  switch (keyCode) {
+    case LEFT_ARROW:
+      if (snake.direction == 3) snake.direction = 3;
+      else snake.direction = 1;
+      break;
+    case RIGHT_ARROW:
+      if (snake.direction == 1) snake.direction = 1;
+      else snake.direction = 3;
+      break;
+    case UP_ARROW:
+      if (snake.direction == 2) snake.direction = 2;
+      else snake.direction = 4;
+      break;
+    case DOWN_ARROW:
+      if (snake.direction == 4) snake.direction = 4;
+      else snake.direction = 2;
+      break;
   }
 }
 
@@ -79,22 +89,6 @@ function Snake_bit(i, j) {
   }
 }
 
-/*
-function PairCoords(x, y) {
-  this.x = x;
-  this.y = y;
-}
-function ListCoords() {
-  this.list = [];
-
-  this.contains = function(x, y) {
-    for(let i = 0; i < this.list.length; i++) {
-        if(x == this.list[i].x &&
-           y == this.list[i].y) return true;
-    }
-    return false;
-  }
-}*/
 
 function Snake() {
   this.pieces = [];
@@ -107,38 +101,22 @@ function Snake() {
     this.hasGrown = true;
   }
 
-  this.bump = function() {
-    /*let list = new ListCoords();
-    let pairCoords;
-
-    for(var i = 0; i < this.pieces.length; i++) {
-      var temp = this.pieces[i];
-      if(temp.isHead == false) {
-        pairCoords = new PairCoords(temp.i, temp.j);
-        list.list.push(pairCoords);
-      }
-      else {
-        console.log("CABEÇA");
-      }
-    }
-
-    console.log("BUMP");
-    for(let j = 0; j < this.pieces.length; j++) {
-      if(list.contains(this.pieces[j].i, this.pieces[j].j)) return true;
-    }*/
-    return false;
-  }
-
   this.draw = function() {
     let temp = [];
-    if(this.direction == 1)
-      temp.push(new Snake_bit(this.pieces[0].i - w, this.pieces[0].j));
-    else if(this.direction == 2)
-      temp.push(new Snake_bit(this.pieces[0].i, this.pieces[0].j + w));
-    else if(this.direction == 3)
-      temp.push(new Snake_bit(this.pieces[0].i + w, this.pieces[0].j));
-    else if(this.direction == 4)
-      temp.push(new Snake_bit(this.pieces[0].i, this.pieces[0].j - w));
+    switch (this.direction) {
+      case 1:
+        temp.push(new Snake_bit(this.pieces[0].i - w, this.pieces[0].j));
+        break;
+      case 2:
+        temp.push(new Snake_bit(this.pieces[0].i, this.pieces[0].j + w));
+        break;
+      case 3:
+        temp.push(new Snake_bit(this.pieces[0].i + w, this.pieces[0].j));
+        break;
+      case 4:
+        temp.push(new Snake_bit(this.pieces[0].i, this.pieces[0].j - w));
+        break;
+    }
 
     let size;
     if(this.hasGrown == true) {
@@ -160,6 +138,12 @@ function Snake() {
   this.intersect = function(food) {
     for(let i = 0; i < this.pieces.length; i++)
       if(this.pieces[i].intersect(food)) return true;
+    return false;
+  }
+
+  this.self_intersect = function() {
+    for(let i = 2; i < this.pieces.length - 1; i++)
+      if(this.pieces[0].intersect(this.pieces[i])) return true;
     return false;
   }
 }
