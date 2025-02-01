@@ -1,11 +1,9 @@
 let cols, rows;
 let cellWidth = 20;
-let despawn = false;
-let food;
+let food, superfood;
 let framert = 8;
-let multiplier = 1;
 let snake;
-let score = 0;
+let superFoodSpawnSound = new Audio('superfood spawn.wav');
 
 function setup() {
   cols = floor(innerWidth / cellWidth);
@@ -14,36 +12,72 @@ function setup() {
   frameRate(framert);
 
   snake = new Snake();
-  food = new Food();
 }
 
+let grow = 0;
 function draw() {
   //background(51);
   background(40, 100, 40);
   snake.draw();
-  if(snake.intersect(food)) {
+
+  if (grow > 0) {
     snake.grow();
-    score += food.points;
-    food = new Food();
+    grow--;
   }
 
   if(snake.self_intersect()) {
-    score = 0;
     snake = new Snake();
   }
 
-  if(despawn) {
-    if(random() > 0.9) {
-      despawn = false;
-      food = new Food();
+  handleFood();
+  handleSuperFood();
+  
+  if(snake.intersect(superfood)) {
+    grow += 5;
+    superfood = null;
+  }
+}
+
+
+function handleSuperFood() {
+  if(snake.intersect(superfood)) {
+    grow += 20;
+    superfood = null;
+  }
+
+  if (!superfood) {
+    if (random() > 0.998) {
+      superfood = new SuperFood();
+      superFoodSpawnSound.play();
     }
   }
   else {
-    food.frameLeft--;
-    if(food.frameLeft <= 0) despawn = true;
-    food.draw();
+    superfood.frameLeft--;
+    if (superfood.frameLeft <= 0) superfood = null;
   }
+
+  superfood? superfood.draw() : null;
 }
+
+
+function handleFood() {
+  if(snake.intersect(food)) {
+    grow++;
+    food = new Food();
+  }
+
+  if(!food) {
+    if(random() > 0.9) food = new Food();
+  }
+  else {
+    food.frameLeft--;
+    if(food.frameLeft <= 0) food = null;
+  }
+
+  food? food.draw() : null;
+}
+
+
 
 function keyPressed() {
   switch (keyCode) {

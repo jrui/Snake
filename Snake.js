@@ -80,12 +80,13 @@ function Snake_bit(i, j) {
       if (framert === 8) fill(0, 200, 0);
       else fill(0, 0, 200);
     }
-    rect(this.i, this.j, this.size, this.size);
+    
+    if (this.isHead) rect(this.i, this.j, this.size, this.size);
+    else rect(this.i + this.size * 0.05, this.j + this.size * 0.05, this.size * 0.9, this.size * 0.9);
   }
 
   this.intersect = function(food) {
-    if(this.i == food.i && this.j == food.j)
-      return true;
+    if (food && this.i == food.i && this.j == food.j) return true;
     else return false;
   }
 }

@@ -1,21 +1,35 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <script src="./p5.min.js"></script>
     <script src="./addons/p5.dom.min.js"></script>
     <script src="./addons/p5.sound.min.js"></script>
     <script src="Snake.js"></script>
     <script src="Food.js"></script>
+    <script src="SuperFood.js"></script>
     <script src="sketch.js"></script>
     <style> body {padding: 0; margin: 0; background: #286428; } </style>
-    <script>
-      alert(`
-        Move snake with arrow keys.
-        Restart level with ENTER key.
-        Speed up and Slow down snake with SPACEBAR.  
-      `);
-    </script>
   </head>
+
   <body>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script>
+      Toastify({
+        text: `MOVE with ARROW KEYS\nRESTART level with ENTER\nSPEED TOGGLE with SPACEBAR`,
+        duration: 10000, // 10 seconds
+        destination: "https://github.com/jrui/Snake",
+        newWindow: true,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        }
+      }).showToast();
+    </script>
   </body>
+  
 </html>
