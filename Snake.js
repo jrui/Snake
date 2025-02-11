@@ -1,58 +1,56 @@
-function Snake() {
-  this.pieces = [];
-  this.pieces.push(new Snake_bit(floor(cols/2) * cellWidth, floor(rows/2) * cellWidth));
-  this.pieces.push(new Snake_bit(floor(cols/2) * cellWidth - cellWidth, floor(rows/2) * cellWidth));
-  this.direction = 1;
-  this.hasGrown = true;
-  this.audio = new Audio('plop.mp3');
+class Snake {
+  
+  constructor() {
+    this.pieces = [];
+    this.pieces.push(new Snake_bit(floor(cols/2) * cellWidth, floor(rows/2) * cellWidth));
+    this.direction = [ floor(random() * 4 + 1) ];
+    this.eatSound = new Audio('plop.mp3');
+  }
+  
 
-
-  this.grow = function() {
+  grow() {
     this.hasGrown = true;
-    this.audio.play();
+    this.eatSound.play();
   }
 
-  this.draw = function() {
-    let temp = [];
-    switch (this.direction) {
+
+  draw() {
+    switch (this.direction[0]) {
       case 1:
-        temp.push(new Snake_bit(this.pieces[0].i - cellWidth, this.pieces[0].j));
+        this.pieces.unshift(new Snake_bit(this.pieces[0].i - cellWidth, this.pieces[0].j));
         break;
       case 2:
-        temp.push(new Snake_bit(this.pieces[0].i, this.pieces[0].j + cellWidth));
+        this.pieces.unshift(new Snake_bit(this.pieces[0].i, this.pieces[0].j + cellWidth));
         break;
       case 3:
-        temp.push(new Snake_bit(this.pieces[0].i + cellWidth, this.pieces[0].j));
+        this.pieces.unshift(new Snake_bit(this.pieces[0].i + cellWidth, this.pieces[0].j));
         break;
       case 4:
-        temp.push(new Snake_bit(this.pieces[0].i, this.pieces[0].j - cellWidth));
+        this.pieces.unshift(new Snake_bit(this.pieces[0].i, this.pieces[0].j - cellWidth));
         break;
     }
 
-    let size;
-    if(this.hasGrown == true) {
-      size = this.pieces.length;
-      this.hasGrown = false;
-    }
-    else size = this.pieces.length - 1;
-    this.pieces[0].isHead = false;
-    this.pieces.reverse();
+    this.direction.length > 1 ? this.direction.shift() : null;
+    this.pieces[0].isHead = true;
+    this.pieces[1].isHead = false;
+    
+    if (!this.hasGrown) this.pieces.pop();
+    else this.hasGrown = false;
 
-    temp[0].isHead = true;
-    for(let i = 0; i < size; i++) {
-      temp.push(this.pieces.pop());
-      temp[i].draw();
+    for(let i = 0; i < this.pieces.length; i++) {
+      this.pieces[i].draw();
     }
-    this.pieces = temp;
   }
 
-  this.intersect = function(food) {
+
+  intersect(food) {
     for(let i = 0; i < this.pieces.length; i++)
       if(this.pieces[i].intersect(food)) return true;
     return false;
   }
 
-  this.self_intersect = function() {
+
+  self_intersect() {
     for(let i = 2; i < this.pieces.length - 1; i++)
       if(this.pieces[0].intersect(this.pieces[i])) return true;
     return false;
@@ -64,7 +62,6 @@ function Snake() {
 function Snake_bit(i, j) {
   this.i = i;
   this.j = j;
-  this.size = cellWidth;
   this.isHead = false;
 
   this.draw = function() {
@@ -81,8 +78,8 @@ function Snake_bit(i, j) {
       else fill(0, 0, 200);
     }
     
-    if (this.isHead) rect(this.i, this.j, this.size, this.size);
-    else rect(this.i + this.size * 0.05, this.j + this.size * 0.05, this.size * 0.9, this.size * 0.9);
+    if (this.isHead) rect(this.i, this.j, cellWidth, cellWidth);
+    else rect(this.i + cellWidth * 0.05, this.j + cellWidth * 0.05, cellWidth * 0.9, cellWidth * 0.9);
   }
 
   this.intersect = function(food) {

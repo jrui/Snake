@@ -3,7 +3,7 @@ class SuperFood {
     constructor() {
         this.i = floor(random(0, cols)) * cellWidth;
         this.j = floor(random(0, rows)) * cellWidth;
-        this.frameLeft = (5 * framert);
+        this.frameLeft = (8 * framert);
         this.radix = cellWidth / 2;
         this.addRadix = true;    
     }

@@ -3,7 +3,7 @@ class Food {
     constructor() {
         this.i = floor(random(0, cols)) * cellWidth;
         this.j = floor(random(0, rows)) * cellWidth;
-        this.frameLeft = (10 * framert);
+        this.frameLeft = (15 * framert);
         this.radix = cellWidth / 2;
         this.addRadix = true;    
     }
