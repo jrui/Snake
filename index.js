@@ -1,13 +1,13 @@
 let cols, rows;
 let food, superfood;
 let snake;
-let superFoodSpawnSound = new Audio('superfood spawn.wav');
 
 const INITIAL_CELL_WIDTH = 25;
 let framert = 8;
 let cellWidth;
 
-
+let PLAYERS;
+let CONNECTION;
 
 function updateZoomLevel(cellWidth) {
   cols = floor(innerWidth / cellWidth);
@@ -24,7 +24,10 @@ function setup() {
 
   updateZoomLevel(cellWidth);
   frameRate(framert);
+
   snake = new Snake();
+  CONNECTION = new Connection();
+  PLAYERS = {};
 }
 
 
@@ -32,7 +35,6 @@ function setup() {
 let grow = 0;
 function draw() {
   background(40, 100, 40);
-  snake.draw();
 
   if (grow > 0) {
     snake.grow();
@@ -46,6 +48,12 @@ function draw() {
 
   handleFood();
   handleSuperFood();
+
+  Object.keys(PLAYERS).map(player => {
+    console.log(player, PLAYERS[player][0]);
+    PLAYERS[player][0].draw();
+  });
+  snake.draw();
 }
 
 
@@ -59,8 +67,6 @@ function handleSuperFood() {
   if (!superfood) {
     if (random() > 0.998) {
       superfood = new SuperFood();
-      superFoodSpawnSound.play();
-      if (debug) console.log('Superfood created at: ', superfood.i, superfood.j);
     }
   }
   else {
@@ -82,7 +88,6 @@ function handleFood() {
   if(!food) {
     if(random() > 0.9) {
       food = new Food();
-      if (debug) console.log('Food created at: ', food.i, food.j);
     }
   }
   else {
@@ -135,6 +140,7 @@ function keyPressed() {
           console.log('Snake size: ', snake.pieces.length, 'Snake head: ', snake.pieces[0].i, snake.pieces[0].j);
           console.log('Snake growing: ', grow);
           console.log('Columns: ', cols, 'Rows: ', rows, 'Cell width: ', cellWidth);
+          console.log('Players: ', PLAYERS);
         }, 5000);
         debug = true;
       }

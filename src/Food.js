@@ -6,6 +6,13 @@ class Food {
         this.frameLeft = (15 * framert);
         this.radix = cellWidth / 2;
         this.addRadix = true;    
+
+        try {
+            if (debug) console.log('Food created at: ', food.i, food.j);
+        }
+        catch (e) {
+            // do nothing
+        }
     }
 
     draw() {

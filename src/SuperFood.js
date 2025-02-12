@@ -1,11 +1,9 @@
-class SuperFood {
+class SuperFood extends Food {
     
     constructor() {
-        this.i = floor(random(0, cols)) * cellWidth;
-        this.j = floor(random(0, rows)) * cellWidth;
+        super();
         this.frameLeft = (8 * framert);
-        this.radix = cellWidth / 2;
-        this.addRadix = true;    
+        SOUND_ASSETS.superFoodSpawn();
     }
 
     draw() {
