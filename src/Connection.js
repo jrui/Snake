@@ -8,23 +8,21 @@ class Connection {
         this.drone.on('open', error => {
             if (error) return console.error(error);
             console.log('Successfully connected');
-
-            const room = this.drone.subscribe('snake-room');
-            room.on('open', error => {
-                if (error) return console.error(error);
-                console.log('Successfully joined game room');
-            });
-
-            room.on('message', m => { 
-                if (m?.clientId !== this.drone.clientId) {
-                    // only add if client is not us
-                    PLAYERS[m.clientId] = PLAYERS[m.clientId] && PLAYERS[m.clientId].length === 0 ? [] : [];
-                    PLAYERS[m.clientId].unshift(new DummySnake(m.data.snake, Date.now()));
-                    PLAYERS[m.clientId].length > 3 ? PLAYERS[m.clientId].pop() : null;
-                }
-            });
         });
         this.drone.on('error', console.error);
+
+        this.room = this.drone.subscribe('snake_game');
+        this.room.on('open', error => {
+            if (error) return console.error(error);
+            console.log('Successfully joined game room');
+        });
+
+        this.room.on('message', m => { 
+            if (m && m.clientId && m.clientId !== this.drone.clientId) {
+                // only add if client is not us
+                PLAYERS.push(new DummySnake(m.data.snake, Date.now()));
+            }
+        });
     }
 
 
@@ -33,9 +31,12 @@ class Connection {
         this.lastUpdate = Date.now();
 
         this.drone.publish({
-            room: 'snake-room',
+            room: 'snake_game',
             id: this.drone.clientId,
             message: { snake }
         });
     }
 }
+
+
+const CONNECTION = new Connection();

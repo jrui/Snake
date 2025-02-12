@@ -19,7 +19,7 @@ class Snake {
   }
 
 
-  draw() {
+  move() {
     switch (this.direction[0]) {
       case 1:
         this.pieces.unshift(new SnakeBit(
@@ -53,7 +53,10 @@ class Snake {
     
     if (!this.hasGrown) this.pieces.pop();
     else this.hasGrown = false;
+  }
 
+
+  draw() {
     for(let i = 0; i < this.pieces.length; i++) {
       this.pieces[i].draw(this.headColor, this.baseColor);
     }
@@ -74,44 +77,9 @@ class Snake {
 
 
   self_intersect() {
-    for(let i = 2; i < this.pieces.length - 1; i++)
+    for(let i = 2; i < this.pieces.length; i++)
       if(this.pieces[0].intersect(this.pieces[i])) return true;
     return false;
-  }
-}
-
-
-
-class SnakeBit {
-  constructor(i, j, isHead = false) {
-    this.i = i;
-    this.j = j;
-    this.isHead = isHead;
-  }
-
-
-  draw(headColor, baseColor) {
-    if (this.i > width - cellWidth) this.i = 0;
-    if (this.i < 0) this.i = width - cellWidth;
-    if (this.j > height - cellWidth) this.j = 0;
-    if (this.j < 0) this.j = height - cellWidth;
-    if (this.isHead) {
-      if (framert === 8) fill(headColor[0], headColor[1], headColor[2]);
-      else fill(80, 80, 200);
-    }
-    else {
-      if (framert === 8) fill(baseColor[0], baseColor[1], baseColor[2]);
-      else fill(0, 0, 200);
-    }
-    
-    if (this.isHead) rect(this.i, this.j, cellWidth, cellWidth);
-    else rect(this.i + cellWidth * 0.05, this.j + cellWidth * 0.05, cellWidth * 0.9, cellWidth * 0.9);
-  }
-
-
-  intersect(food) {
-    if (food && this.i == food.i && this.j == food.j) return true;
-    else return false;
   }
 }
 
@@ -124,3 +92,6 @@ class DummySnake extends Snake {
     this.pieces = this.pieces.map(piece => new SnakeBit(piece.i, piece.j, piece.isHead));
   }
 }
+
+
+let snake;

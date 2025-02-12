@@ -3,7 +3,7 @@ class Food {
     constructor() {
         this.i = floor(random(0, cols)) * cellWidth;
         this.j = floor(random(0, rows)) * cellWidth;
-        this.frameLeft = (15 * framert);
+        this.despawnTime = Date.now() + 10000; // 15 seconds
         this.radix = cellWidth / 2;
         this.addRadix = true;    
 
@@ -28,4 +28,27 @@ class Food {
             this.addRadix = true;
         }
     }
-}  
+}
+
+
+
+function handleFood() {
+    if(snake.intersect(food)) {
+        grow++;
+        food = new Food();
+    }
+    if(!food) {
+        if(random() > 0.9) {
+            food = new Food();
+        }
+    }
+    else if (food.despawnTime < Date.now()) {
+        food = null;
+    }
+
+    food? food.draw() : null;
+}
+
+  
+
+let food;

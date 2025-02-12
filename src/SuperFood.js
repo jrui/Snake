@@ -2,7 +2,7 @@ class SuperFood extends Food {
     
     constructor() {
         super();
-        this.frameLeft = (8 * framert);
+        this.despawnTime = Date.now() + 5000; // 8 seconds
         SOUND_ASSETS.superFoodSpawn();
     }
 
@@ -19,4 +19,26 @@ class SuperFood extends Food {
             this.addRadix = true;
         }
     }
-}  
+}
+
+
+function handleSuperFood() {
+    if (snake.intersect(superfood)) {
+        grow += 10;
+        superfood = null;
+    }
+  
+    if (!superfood) {
+        if (random() > 0.996) {
+            superfood = new SuperFood();
+        }
+    }
+    else if (superfood.despawnTime < Date.now()) {
+        superfood = null;
+    }
+  
+    superfood? superfood.draw() : null;
+}
+
+
+let superfood;
