@@ -34,7 +34,7 @@ class Food {
 
 function handleFood() {
     if(snake.intersect(food)) {
-        grow++;
+        snake.hasToGrow++;
         food = new Food();
     }
     if(!food) {

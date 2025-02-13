@@ -3,6 +3,11 @@ class Snake {
     this.pieces = [];
     this.baseColor = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)];
     this.headColor = [Math.max(this.baseColor[0] - 20, 0), Math.max(this.baseColor[1] - 20, 0), Math.max(this.baseColor[2] - 20, 0)];
+    this.speed = 2;
+    this.hasToGrow = 0;
+
+    this.spawnTime = Date.now();
+    this.lastUpdateReceived = 0;
 
     this.pieces.push(new SnakeBit(
       floor(random() * cols) * cellWidth,
@@ -16,10 +21,16 @@ class Snake {
   grow() {
     this.hasGrown = true;
     SOUND_ASSETS.snakeEat();
+    CONNECTION.sendUpdate(this, 'has_grown');
   }
 
 
   move() {
+    if (this.hasToGrow > 0) {
+      this.grow();
+      this.hasToGrow--;
+    }
+  
     switch (this.direction[0]) {
       case 1:
         this.pieces.unshift(new SnakeBit(
@@ -57,21 +68,33 @@ class Snake {
 
 
   draw() {
-    for(let i = 0; i < this.pieces.length; i++) {
-      this.pieces[i].draw(this.headColor, this.baseColor);
+    if (frameCounter % this.speed == 0) {
+      this.move();
+      if (this.spawnTime === startTimer && frameCounter % (this.speed * 10) === 0) {
+        // send Keep alive every 100 updateable frames this snake is alive
+        CONNECTION.sendUpdate(this, 'keep_alive');
+      }
     }
-
-    try {
-      CONNECTION.sendUpdate(this);
-    } catch (e) {
-      // client connection initializing
+    
+    for(let i = 0; i < this.pieces.length; i++) {
+      try {
+        this.pieces[i].draw(this.headColor, this.baseColor);
+      } catch(e) {
+        new SnakeBit(this.pieces[i].i, this.pieces[i].j).draw(this.headColor, this.baseColor);
+      }
     }
   }
 
 
   intersect(food) {
-    for(let i = 0; i < this.pieces.length; i++)
-      if(this.pieces[i].intersect(food)) return true;
+    for (let i = 0; i < this.pieces.length; i++) {
+      try {
+        if (this.pieces[i].intersect(food)) return true;
+      }
+      catch(e) {
+        if (new SnakeBit(this.pieces[i].i, this.pieces[i].j).intersect(food)) return true;
+      }
+    }
     return false;
   }
 
@@ -81,17 +104,31 @@ class Snake {
       if(this.pieces[0].intersect(this.pieces[i])) return true;
     return false;
   }
-}
 
 
-class DummySnake extends Snake {
-  constructor(obj, lastUpdate) {
-    super();
-    obj && Object.assign(this, obj);
-    this.lastUpdate = lastUpdate;
-    this.pieces = this.pieces.map(piece => new SnakeBit(piece.i, piece.j, piece.isHead));
+  headIntersectsPlayer() {
+    for(let id in PLAYERS) {
+      if(PLAYERS[id].intersect(this.pieces[0])) return true;
+    }
+    return false;
+  }
+
+
+  async changeDirection(direction) {
+    this.direction.push(direction);
+    await CONNECTION.sendUpdate(this, 'direction_change');
+  }
+
+
+  async changeSpeed(speed) {
+    this.speed = speed;
+    await CONNECTION.sendUpdate(this, 'speed_change');
+  }
+
+
+  async signalSpawn() {
+    await CONNECTION.sendUpdate(this, 'spawn');
   }
 }
-
 
 let snake;

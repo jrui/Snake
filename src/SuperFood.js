@@ -24,7 +24,7 @@ class SuperFood extends Food {
 
 function handleSuperFood() {
     if (snake.intersect(superfood)) {
-        grow += 10;
+        snake.hasToGrow += 10;
         superfood = null;
     }
   
